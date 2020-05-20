@@ -1,0 +1,63 @@
+<!DOCTYPE html >
+<html>
+<head>
+    <link rel="stylesheet" href="demos.css" type="text/css" media="screen" />
+    
+    <script src="../libraries/RGraph.common.core.js" ></script>
+    <script src="../libraries/RGraph.common.dynamic.js" ></script>
+    <script src="../libraries/RGraph.meter.js" ></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <!--[if lt IE 9]><script src="../excanvas/excanvas.js"></script><![endif]-->
+    
+    <title>An adjustable (black) Meter chart</title>
+    <meta name="description" content="An adjustable (black) Meter chart" />
+     
+</head>
+<body>
+
+    <h1>An adjustable (black) Meter chart</h1>
+
+    <canvas id="cvs" width="600" height="500" style="background-color: black; border-radius: 15px; box-shadow:3px 3px 3px gray">[No canvas support]</canvas>
+    <script>
+        $(document).ready(function ()
+        {
+            var meter = new RGraph.Meter('cvs', 0,100,75)
+                .set('background.color', 'black')
+                .set('angles.start', RGraph.PI - 0.55)
+                .set('angles.end', RGraph.TWOPI + 0.5)
+                .set('centery', 300)
+                //.set('linewidth.segments', 15)
+                .set('text.size', 22)
+                .set('text.color', 'white')
+                .set('green.color', '#0a0')
+                .set('segment.radius.start', 175)
+                .set('border', 0)
+                .set('tickmarks.small.num', 0)
+                .set('tickmarks.big.num', 0)
+                .set('needle.radius', 250)
+                .set('needle.color', '#ddd')
+                .set('centerpin.stroke', '#ddd')
+                .set('centerpin.fill', '#ddd')
+                .set('text.valign', 'bottom')
+                .on('beforedraw', function (obj)
+                {
+                    RGraph.clear(obj.canvas, 'black');
+                })
+                .draw();
+            
+            meter.canvas.onclick = function (e)
+            {
+                var newvalue = meter.getValue(e);
+                
+                meter.value = newvalue;
+                meter.grow();
+            }
+        })
+    </script>
+
+    <p>
+        <a href="./">&laquo; Back</a>
+    </p>
+
+</body>
+</html>

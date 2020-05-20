@@ -1,0 +1,47 @@
+<!DOCTYPE html >
+<html>
+<head>
+    <link rel="stylesheet" href="demos.css" type="text/css" media="screen" />
+    
+    <script src="../libraries/RGraph.common.core.js" ></script>
+    <script src="../libraries/RGraph.funnel.js" ></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <!--[if lt IE 9]><script src="../excanvas/excanvas.js"></script><![endif]-->
+    
+    <title>An inverted Funnel chart</title>
+    
+    <meta name="description" content="An inverted Funnel chart with the thin end at the top" />
+     
+</head>
+<body>
+
+    <h1>An inverted Funnel chart showing a hypothetical company structure</h1>
+
+    <canvas id="cvs" width="450" height="500">[No canvas support]</canvas>
+    
+    <script>
+        $(document).ready(function ()
+        {
+            var funnel = new RGraph.Funnel('cvs', [15,26,54,84,100, 186])
+                .set('labels', ['Directors','Regional directors', 'Regional Managers','Managers','Supervisors','Programmers'])
+                .set('gutter.left', 230)
+                .set('labels.sticks', true)
+                .set('labels.x', 5)
+                .set('strokestyle', 'rgba(0,0,0,0)')
+                .set('text.boxed', false)
+                .set('shadow', true)
+                .set('shadow.offsetx', 0)
+                .set('shadow.offsety', 0)
+                .set('shadow.blur', 15)
+                .set('shadow.color', 'gray')
+                .set('colors', ['red','green','blue','pink','#666'])
+                .draw();
+        })
+    </script>
+
+    <p>
+        <a href="./">&laquo; Back</a>
+    </p>
+
+</body>
+</html>

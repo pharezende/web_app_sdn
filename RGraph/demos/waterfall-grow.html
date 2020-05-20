@@ -1,0 +1,102 @@
+<!DOCTYPE html >
+<html>
+<head>
+    <script src="../libraries/RGraph.common.core.js" ></script>
+    <script src="../libraries/RGraph.line.js" ></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <!--[if lt IE 9]><script src="../excanvas/excanvas.js"></script><![endif]-->
+    
+    <title>TESTE</title>
+
+    <meta name="description" content="A Waterfall chart using the Grow effect" />
+     
+</head>
+<body>
+<div style="float: right">
+        <canvas id="cvs" width="600" height="250">[No canvas support]</canvas><br />
+        <span style="margin-left: 25px">
+            Number of updates: <span id="num_updates">0</span>
+        </span>
+    </div>
+
+    <script>
+        window.onload = function (e)
+        {
+            var d1  = [];
+            var l   = 0; // The letter 'L' - NOT a one
+        
+            // Pre-pad the arrays with null values
+            for (var i=0; i<600; ++i) {
+                d1.push(null);
+            }
+            
+            var obj = null;
+
+            function getGraph(id, d1)
+            {
+                // After creating the chart, store it on the global window object
+                if (!obj) {
+                    obj = new RGraph.Line(id, d1)
+                        .set('xticks', 100)
+                        .set('colors', ['black'])
+                        .set('linewidth',0.5)
+                        .set('yaxispos', 'right')
+                        .set('ymax', 50)
+                        .set('xticks', 25)
+                        .set('filled', true)
+                        .set('numxticks', 6)
+                        .set('numyticks', 2)
+                        .set('tickmarks', null)
+                        .set('ylabels.count', 2)
+                    
+                    var grad = obj.context.createLinearGradient(0,0,0,250);
+                    grad.addColorStop(0, '#efefef');
+                    grad.addColorStop(0.9, 'rgba(0,0,0,0)');
+
+                    obj.set('fillstyle', [grad]);
+                }
+
+                return obj;
+            }
+        
+            function drawGraph ()
+            {
+                // "cache" this in a local variable
+                var _RG = RGraph;
+                
+
+                // Update the HTML counter - this is totally optional
+                document.getElementById("num_updates").innerHTML = parseInt(document.getElementById("num_updates").innerHTML) + 1;
+
+                RGraph.clear(document.getElementById("cvs", 'white'));
+                
+                var graph = getGraph('cvs', d1);
+                graph.draw();
+
+                // Add some data to the data arrays
+                var r1 = RGraph.random(
+                                       _RG.is_null(d1[d1.length - 1]) ? 26 : d1[d1.length - 1] - 2,
+                                       _RG.is_null(d1[d1.length - 1]) ? 24 : d1[d1.length - 1] + 2
+                                      );
+               r1 = Math.max(r1, 0);
+               r1 = Math.min(r1, 50);
+
+                d1.push(r1);
+                
+                if (d1.length > 600) {
+                    d1 = _RG.array_shift(d1);
+                }
+    
+                if (RGraph.ISIE8) {
+                    alert('[MSIE] Sorry, Internet Explorer 8 is not fast enough to support animated charts');
+                } else {
+                    obj.original_data[0] = d1;
+                    setTimeout(drawGraph, 25);
+                }
+            }
+        
+            drawGraph();
+        }
+    </script>
+</body>
+</html>

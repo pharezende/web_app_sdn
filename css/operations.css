@@ -1,0 +1,142 @@
+    /*Conector dos hosts e switches*/
+    .Label_JSPLUMB {
+        color: black;
+        font-size: 18px;
+        background-color: white;
+        border: 1px solid black;
+    }
+    /*Texto nas imagens dos switches e hosts.*/
+    #host_switch_Text {
+        color: black;
+        font-size: 14px;
+        background-color: white;
+        border: 1px solid black;
+    }
+    /*Efeito nos fluxos*/
+    #flowsList {
+        border-collapse: collapse;
+        border: 1px solid #ccc;
+        text-align: center;
+        background: #aee0e8;
+    }
+    #flowsList tbody tr:hover {
+        background: #35d2ab;
+        cursor: pointer;
+        overflow: auto;
+    }
+
+    /*Efeitos nos Grupos*/
+    #groupsList {
+        border-collapse: collapse;
+        border: 1px solid #ccc;
+        text-align: center;
+        background: #e8d3ae;
+	width:20px;
+    }
+    #groupsList tbody tr:hover {
+        background: #aee0e8;
+        cursor: pointer;
+        overflow: auto;
+    }
+
+     /*Efeitos nos Buckets*/
+    #bucketsList {
+        border-collapse: collapse;
+        border: 1px solid #ccc;
+        text-align: center;
+        background: #e8d3ae;
+    }
+    #bucketsList tbody tr:hover {
+        background: #aee0e8;
+        cursor: default;
+        overflow: auto;
+    }
+
+     /*Efeitos nos Outros*/
+    #otherList {
+        border-collapse: collapse;
+        border: 1px solid #ccc;
+        text-align: center;
+        background: #aee0e8;
+    }
+    #otherList tbody tr:hover {
+        background: #aee8d3;
+        cursor: default;
+        overflow: auto;
+    }
+
+    /*Efeitos nos Hosts*/
+    #hostsList {
+        border-collapse: collapse;
+        border: 1px solid #ccc;
+        text-align: center;
+        background: #8BAD6F;
+    }
+    #hostsList tbody tr:hover {
+        background: #4f9515;
+        cursor: default;
+        overflow: auto;
+    }
+    /*Efeitos nos Switches*/
+    #portsList {
+        border-collapse: collapse;
+        border: 1px solid #ccc;
+        text-align: center;
+        background: #FF0000;
+    }
+    #portsList tbody tr:hover {
+        background: #e50000;
+        cursor: default;
+        overflow: auto;
+    }
+    /*Efeitos nas Filas*/
+    #queuesList {
+        border-collapse: collapse;
+        border: 1px solid #ccc;
+        text-align: center;
+        background: #36c9a4;
+    }
+    #queuesList tbody tr:hover {
+        background: #4aba8d;
+        cursor: default;
+        overflow: auto;
+    }
+    /*Efeitos na Autenticação*/
+    #authenticationList {
+        border-collapse: collapse;
+        border: 1px solid #ccc;
+        text-align: center;
+        background: #f09023;
+    }
+    #authenticationList tbody tr:hover {
+        background: #bc7b12;
+        cursor: default;
+        overflow: auto;
+    }
+
+    /*Efeitos no campo de Configurações do Controlador*/
+    #controllerSettings {
+	border-style: solid;
+        border-width: 5;
+        height:150px;
+        width: 200px;
+    }
+
+    /*Efeitos no campo de Configurações da Topologia*/
+    #topologySettings{
+        border-style: solid;
+        border-width: 5;
+        height:230px;
+        width: 230px;
+    }
+
+    /*Efeitos no campo de Configurações do Mecanismo*/
+    #mechanismSettings{
+        border-style: solid;
+        border-width: 5;
+        height:100px;
+        width: 100px;
+    }
+
+
+

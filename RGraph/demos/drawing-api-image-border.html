@@ -1,0 +1,56 @@
+<!DOCTYPE html >
+<html>
+<head>
+    <link rel="stylesheet" href="demos.css" type="text/css" media="screen" />
+    
+    <script src="../libraries/RGraph.common.core.js" ></script>
+    <script src="../libraries/RGraph.line.js" ></script>
+    <script src="../libraries/RGraph.drawing.image.js" ></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <!--[if lt IE 9]><script src="../excanvas/excanvas.js"></script><![endif]-->
+    
+    <title>An example of the drawing API image object with a border</title>
+
+    <meta name="description" content="An example of the drawing API image object with a circular border" />
+</head>
+<body>
+        
+    <h1>An example of the drawing API image object with a circular border</h1>
+
+    <canvas id="cvs" width="600" height="250">[No canvas support]</canvas>
+
+    <script>
+        $(document).ready(function ()
+        {
+            var line = new RGraph.Line('cvs', [5,4,8,4,3,5,2])
+                .set('hmargin', 5)
+                .set('labels', ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'])
+                .set('background.grid.vlines', false)
+                .set('background.grid.border', false)
+                .set('tickmarks', 'circle')
+                .draw();
+            
+            var coords = line.coords[2];
+            
+            var img = new RGraph.Drawing.Image('cvs', 25 + 45, 25 + 45, '/images/logo.png')
+                .set('halign', 'center')
+                .set('valign', 'center')
+                .set('alpha', 1)
+                .set('border', true)
+                .set('border.color', 'gray')
+                .set('border.linewidth', 1)
+                .set('border.radius', 50)
+                .set('background.color', 'white')
+                .set('shadow', true)
+                .set('shadow.color', '#ccc')
+                .draw();
+        })
+    </script>
+
+
+    <p>
+        <a href="./">&laquo; Back</a>
+    </p>
+
+</body>
+</html>

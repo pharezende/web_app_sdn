@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+    <title>Network Monitoring App</title>
+    <link rel="stylesheet" type="text/css" href="../css/operations.css"/>
+    <link rel="stylesheet" type="text/css" href="../css/menu.css"/>
+    <script src="../jquery_biblioteca/jquery-1.9.1.js"></script>
+    <script src="../jquery_biblioteca/jquery-ui.js"></script>
+    <script src="../jquery_biblioteca/jquery.jsPlumb-1.4.1-all.js"></script>
+    <script src="../js/authentication/userAuthentication.js"></script>
+    <script src="../js/authentication/authenticationHistory.js"></script>
+    <script src="../js/charts/charts.js"></script>
+    <script src="../js/clearGUI/clearGUI.js"></script>
+    <script src="../js/generateTopology/generateTopology.js"></script>
+    <script src="../js/linkParameters/linkParameters.js"></script>
+    <script src="../js/load/flows.js"></script>
+    <script src="../js/load/port.js"></script>
+    <script src="../js/other/globalVariables.js"></script>
+    <script src="../js/other/otherFunctions.js"></script>
+    <script src="../js/settings/controllerSettings.js"></script>
+    <script src="../js/settings/mechanismSettings.js"></script>
+    <script src="../js/settings/topologySettings.js"></script>
+    <script src="../js/switchStats/populateTable.js"></script>
+    <script src="../js/switchStats/groupTable/groupCounter.js"></script>
+    <script src="../js/switchStats/groupTable/groupDescription.js"></script>
+    <script src="../js/switchStats/groupTable/groupFeatures.js"></script>
+    <script src="../js/switchStats/meterTable/meter.js"></script>
+    <script src="../js/switchStats/meterTable/meterConfig.js"></script>
+    <script src="../js/switchStats/meterTable/meterFeatures.js"></script>
+    <script src="../js/switchStats/other/aggregate.js"></script>
+    <script src="../js/switchStats/other/description.js"></script>
+    <script src="../js/switchStats/other/features.js"></script>
+    <script src="../js/switchStats/other/flow.js"></script>
+    <script src="../js/switchStats/other/queue.js"></script>
+    <script src="../js/switchStats/other/table.js"></script>
+    <script src="../js/switchStats/port/portCounter.js"></script>
+    <script src="../js/switchStats/port/portDescription.js"></script>
+    <script src="../js/controllerStats/hostTable.js"></script>
+    <script src="../js/controllerStats/summary.js"></script>
+    <script src="../js/controllerStats/memory.js"></script>
+    <script src="../js/controllerStats/switchTable.js"></script>
+    <script src="../js/controllerStats/uptime.js"></script>
+    <script src="../js/verifyConnection/verifyConnection.js"></script>
+</head>
+
+<body>
+
+<div class="drop">
+    <ul class="top-level-menu">
+        <li><a href='#' id="generate_topology">Generate Topology</a>
+        </li>
+        <li><a href='#'>Load</a>
+            <ul class="second-level-menu">
+                <li><a href='#' id="load_flows">Flows</a>
+                </li>
+                <li><a href='#' id="load_ports">Ports</a>
+                </li>
+            </ul>
+        </li>
+        <li><a href='#'>Controller Stats</a>
+            <ul class="second-level-menu">
+                <li><a href='#' id="hosts_table">Hosts</a></li>
+                <li><a href='#' id="memory_usage">Memory Usage</a></li>
+                <li><a href='#' id="switches_table">Switches</a></li>
+                <li><a href='#' id="summary">Summary</a></li>
+                <li><a href='#' id="uptime">Uptime</a></li>
+            </ul>
+        </li>
+        <li><a href='#'>Switches Stats</a>
+            <ul class="second-level-menu">
+
+                <li><a href='#'>Other</a>
+                    <ul class="third-level-menu">
+                        <li><a href="#" id="other_aggregate">Aggregate</a></li>
+                        <li><a href="#" id="other_description">Description</a></li>
+                        <li><a href="#" id="other_features">Features</a></li>
+                        <li><a href="#" id="other_flow">Flow</a></li>
+                        <li><a href="#" id="other_queue">Queue</a></li>
+                        <li><a href="#" id="other_table">Table</a></li>
+                    </ul>
+                </li>
+
+                <li><a href='#'>Groups</a>
+                    <ul class="third-level-menu">
+                        <li><a href="#" id="group_counter"> Group Counter</a></li>
+                        <li><a href="#" id="group_desc"> Group Description</a></li>
+                        <li><a href="#" id="group_feat">Group Features</a></li>
+                    </ul>
+                </li>
+                <li><a href='#' id="meters_table">Meters</a>
+                    <ul class="third-level-menu">
+                        <li><a href="#" id="meter">Meter Statistics</a></li>
+                        <li><a href="#" id="meter_config">Meter Configuration</a></li>
+                        <li><a href="#" id="meter_features">Meter Features</a></li>
+                    </ul>
+                </li>
+                <li><a href='#'>Ports</a>
+                    <ul class="third-level-menu">
+                        <li><a href="#" id="port_counter">Port Counter</a></li>
+                        <li><a href="#" id="port_desc">Port Description</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+        <li><a href='#' id="charts">Charts</a>
+        </li>
+        <li><a href='#'>Authentication</a>
+            <ul class="second-level-menu">
+                <li><a href='#' id="authentication_history">History</a>
+                </li>
+                <li><a href='#' id="users_authenticated">Users Authenticated</a>
+                </li>
+            </ul>
+        </li>
+        <li><a href='#'>Settings</a>
+            <ul class="second-level-menu">
+                <li><a href='#' id="controller_settings">Controller</a>
+                </li>
+                <li><a href='#' id="mechanism">Mechanism</a>
+                </li>
+                <li><a href='#' id="topology_settings">Topology</a>
+                </li>
+            </ul>
+        </li>
+        <li><a href='#' id="verify_connection">Verify Connection</a>
+        </li>
+        <li><a href='#' id="clear">Clear Web UI</a>
+        </li>
+
+
+    </ul>
+</div>
+
+<!--Controller Stats DIVs-->
+
+<div id="HostTable" style="height:1px; width:1px;">
+</div>
+
+<div id="MemoryUsage" style="height:1px; width:1px;">
+</div>
+
+<div id="SwitchTable" style="height:1px; width:1px;">
+</div>
+
+<div id="Summary" style="height:1px; width:1px;">
+</div>
+
+<div id="UpTime" style="height:1px; width:1px;">
+</div>
+
+
+<!--Switches Stats DIVs-->
+<!--BEGIN-->
+<div id="AggregateTable" style="height:1px; width:1px;">
+</div>
+
+<div id="BucketsTable" style="height:1px; width:1px;">
+</div>
+
+<div id="DescriptionTable" style="height:1px; width:1px;">
+</div>
+
+<div id="FeaturesTable" style="height:1px; width:1px;">
+</div>
+
+<div id="FlowTable" style="height:1px; width:1px;">
+</div>
+
+<div id="GroupCounter" style="height:1px; width:1px;">
+</div>
+
+<div id="GroupCounterBuckets" style="height:1px; width:1px;">
+</div>
+
+<div id="GroupDescription" style="height:1px; width:1px;">
+</div>
+
+<div id="GroupDescriptionBuckets" style="height:1px; width:1px;">
+</div>
+
+<div id="GroupFeatures" style="height:1px; width:1px;">
+</div>
+
+<div id="GroupFeaturesBuckets" style="height:1px; width:1px;">
+</div>
+
+<div id="Meter" style="height:1px; width:1px;">
+</div>
+
+<div id="MeterConfig" style="height:1px; width:1px;">
+</div>
+
+<div id="MeterFeatures" style="height:1px; width:1px;">
+</div>
+
+<div id="PortCounter" style="height:1px; width:1px;">
+</div>
+
+<div id="PortDescription" style="height:1px; width:1px;">
+</div>
+
+<div id="QueueTable" style="height:1px; width:1px;">
+</div>
+
+<div id="TTable" style="height:1px; width:1px;">
+</div>
+<!--END-->
+
+
+<!--OTHER-->
+
+<div id="RTFlowsTable" style="height:1px; width:1px;">
+</div>
+
+<div id="Images" style="height:1px; width:1px;"></div>
+
+<div id="FlowChart" style="height:1px; width:1px;"></div>
+
+<div id="PortChart" style="height:1px; width:1px;"></div>
+
+<div id="Authenticated" style="height:1px; width:1px;"></div>
+
+<div id="AuthenticationHistory" style="height:1px; width:1px;"></div>
+
+<div id="VerifyConnection" style="height:1px; width:1px;"></div>
+
+<div id="MechanismSettings" style="height:1px; width:1px;"></div>
+
+<div id="TopologySettings" style="height:1px; width:1px;"></div>
+
+<div id="ControllerSettings" style="height:1px; width:1px;"></div>
+
+</body>
+
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html >
+<html>
+<head>
+    <link rel="stylesheet" href="demos.css" type="text/css" media="screen" />
+    
+    <script src="../libraries/RGraph.common.core.js" ></script>
+    <script src="../libraries/RGraph.line.js" ></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <!--[if lt IE 9]><script src="../excanvas/excanvas.js"></script><![endif]-->
+    
+    <title>A Line chart with a green background</title>
+    
+    <meta name="description" content="A Line chart with a green background" />
+     
+</head>
+<body>
+
+    <h1>A Line chart with a green background</h1>
+
+    <canvas id="cvs" width="600" height="250">[No canvas support]</canvas>
+    
+    <script>
+        $(document).ready(function ()
+        {
+            var line = new RGraph.Line('cvs', [10,7,8,4,5,1,2])
+                .set('shadow', false)
+                .set('fillstyle', '#3C3C3C')
+                .set('filled', true)
+                .set('tickmarks', null)
+                .set('linewidth', 8)
+                .set('colors', ['white'])
+                .set('labels', ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'])
+                .set('background.color', '#96CB35')
+                .set('numxticks', 0)
+                .set('numyticks', 0)
+                .set('noaxes', true)
+                .set('background.grid', false)
+                .draw();
+        })
+    </script>
+
+    <p>
+        <a href="./">&laquo; Back</a>
+    </p>
+
+</body>
+</html>

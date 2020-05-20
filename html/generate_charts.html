@@ -1,0 +1,418 @@
+<!DOCTYPE html >
+<html>
+<head>
+    <title>Traffic Chart</title>
+    <script src="../RGraph/libraries/RGraph.common.key.js"></script>
+    <script src="../RGraph/libraries/RGraph.common.core.js"></script>
+    <script src="../RGraph/libraries/RGraph.line.js"></script>
+    <script src="../jquery_biblioteca/jquery-1.9.1.js"></script>
+    <script src="../jquery_biblioteca/jquery-ui.js"></script>
+
+</head>
+<body>
+
+<script>
+    var URL = "http://127.0.0.1:8080";
+    var mechanism //Mechanism (SFLOW or POLLING)
+    var maxBandwidth = null; // Banda máxima da porta, se escolher porta.
+    var l = 0; // The letter 'L' - NOT a one
+    var DPID_Traffic = new Array(); // DPID -> Tráfego
+    // Pre-pad the arrays with null values
+
+    var obj = null;
+
+    function getGraph(dpidArray) {
+        var num_colors = dpidArray.length;
+        // After creating the chart, store it on the global window object
+        if (!obj) {
+            var max = 20;
+            if (maxBandwidth !== null) {
+                max = maxBandwidth;
+            }
+            obj = new RGraph.Line("cvs")
+                //.set('xticks', 10)
+                .set('colors', ['blue', 'green', 'red', 'black', 'orange', 'yellow', 'purple', 'gray', 'pink'])
+                .set('linewidth', 2)
+                .set('yaxispos', 'right')
+                .set('ymax', max)
+                //.set('xticks', 5)
+                //.set('filled', true)
+                .set('numxticks', 20)
+                .set('numyticks', 5)
+                .set('tickmarks', null)
+                .set('ylabels.count', 5)
+            var labels = new Array();
+            for (i = 0; i < dpidArray.length; i++) {
+                labels[i] = dpidArray[i];
+            }
+            labels.sort();
+            key = {
+                'colors': obj.Get('colors'),
+                'labels': labels
+            }
+            RGraph.HTML.Key('myKey', key);
+
+
+        }
+
+        return obj;
+    }
+
+
+    var flag = false; //Evitar que crie várias Divs.
+    function drawGraph(target, option, flow) //Target é o que será procurado e option se vai ser fluxo ou porta.
+    {
+        // "cache" this in a local variable
+        $.when(callGetAjax(target)).done(function (received) {
+            if (option === "port") {
+                if (flag === true) {
+                    var dpidArray = processaPort(received, flow);
+                    if (dpidArray === null) {
+                        setTimeout(function () {
+                            drawGraph(target, option, flow)
+                        }, 1000);
+                        return;
+                    }
+                    var data = flow.split(",");
+                    document.getElementById("switch").innerHTML = data[0];
+                    document.getElementById("port").innerHTML = data[1];
+                } else {
+                    $("#Canvas").css("float", "right");
+                    $("#Canvas").append("<canvas id='cvs' width='600' height='500'>[No canvas support]</canvas><br />");
+                    $("#Canvas").append("<span style='margin-left: 0px'>");
+                    $("#Canvas").append("Number of updates: <span id='num_updates'>0</span><br/><br/>");
+                    $("#Canvas").append("</span>");
+                    $("#Canvas").append("<span style='margin-left: 0px'>");
+                    $("#Canvas").append("Switch: <span id='switch'></span>");
+                    $("#Canvas").append("</span>");
+                    $("#Canvas").append("<span style='margin-left: 10px'>");
+                    $("#Canvas").append("Port: <span id='port'></span>");
+                    $("#Canvas").append("</span>");
+                    $("#Canvas").append("</div>");
+                    $("#Canvas").append("<div style='position: absolute; left: 500px; top: 25px' id='myKey'></div>");
+                    dpidArray = processaPort(received, flow);
+                    flag = true;
+                }
+            }
+            if (option === "flow") {
+                if (flag === true) {
+                    dpidArray = processaFlow(received, flow);
+                    if (dpidArray === null) {// No caso da conexão cair.
+                        setTimeout(function () {
+                            drawGraph(target, option, flow)
+                        }, 1000);
+                        return;
+                    }
+                    document.getElementById("flow").innerHTML = flow;
+                } else {
+                    $("#Canvas").css("float", "right");
+                    $("#Canvas").append("<canvas id='cvs' width='600' height='500'>[No canvas support]</canvas><br />");
+                    $("#Canvas").append("<span style='margin-left: 0px'>");
+                    $("#Canvas").append("Number of updates: <span id='num_updates'>0</span>");
+                    $("#Canvas").append("</span>");
+                    $("#Canvas").append("<span style='margin-left: 25px'>");
+                    $("#Canvas").append("Flow: <span id='flow'></span>");
+                    $("#Canvas").append("</span>");
+                    $("#Canvas").append("</div>");
+                    $("#Canvas").append("<div style='position: absolute; left: 500px; top: 25px' id='myKey'></div>");
+                    dpidArray = processaFlow(received, flow);
+                    flag = true;
+                }
+            }
+            var _RG = RGraph;
+            // Update the HTML counter - this is totally optional
+            document.getElementById("num_updates").innerHTML = parseInt(document.getElementById("num_updates").innerHTML) + 1;
+            RGraph.clear(document.getElementById("cvs", 'white'));
+            var graph = getGraph(dpidArray);
+            graph.draw();
+            if (RGraph.ISIE8) {
+                alert('[MSIE] Sorry, Internet Explorer 8 is not fast enough to support animated charts');
+            } else {
+                setTimeout(function () {
+                    drawGraph(target, option, flow)
+                }, 1000);
+            }
+        });
+    }
+
+    var chart_status = 1; // Botão do gráfico liberado.
+    $(function () {
+        $("#charts").click(function () {
+            if (chart_status === 0) {
+                chart_status = 1;
+                $("#ChooseCharts").hide();
+                return;
+            }
+            mechanism = location.search.split('mechanism=')[1];
+            chart_status = 0;
+            chooseChart();
+        });
+    });
+
+    function chooseChart() {
+        $("#ChooseCharts").draggable();
+        $("#ChooseCharts").html("<b>Type:</b><br> <form name='gOption'> <input type='radio' name='option' value='port'> Port<br> <input type='radio' name='option' value='flow'>Flow  <br></form>");
+        $("#ChooseCharts").css("border-style", "solid");
+        $("#ChooseCharts").css("border-width", 5);
+        $("#ChooseCharts").css("width", 80);
+        $("#ChooseCharts").css("height", 100);
+        $("#ChooseCharts").show();
+
+        $('#ChooseCharts').on('change', function () {
+            var option = $('input[name=option]:checked', '#ChooseCharts').val();
+            $("#ChooseCharts").hide();
+            if (option === "port") {
+                $.when(callGetAjax("/wm/core/switch/all/port/json")).done(function (received) {
+                    var data = JSON.parse(received);
+                    var switchComponents = populatePortChart(data);
+                    var switchesPorts = new Array();
+                    var select1 = "<select id='switchSelect'> <option selected disabled hidden value=''> </option>";
+                    for (i = 0; i < switchComponents.length; i++) {
+                        var arraySwitch = switchComponents[i].split('|');
+                        var dpid = arraySwitch[0];
+                        var ports = arraySwitch[1];
+                        switchesPorts[dpid] = ports;
+                        select1 += "<option value='" + dpid + "'>" + dpid + "</option>";
+                    }
+                    $("#PortChart").draggable();
+                    $('#PortChart').html("<b>Choose a Switch:</b><br>" + select1);
+                    $("#PortChart").append("<div id='portSwitchChart'></div>");
+                    $("#PortChart").css("border-style", "solid");
+                    $("#PortChart").css("border-width", 5);
+                    $("#PortChart").css("width", 200);
+                    $("#PortChart").css("height", 200);
+                    $("#switchSelect").change(function () {
+                        var dpid = $(this).val();
+                        if (dpid !== null) {
+                            var select2 = "<select id='portSelect'> <option selected disabled hidden value=''></option>";
+                            var portsArray = switchesPorts[dpid].split(',');
+                            for (i = 0; i < portsArray.length; i++) {
+                                var portAux = portsArray[i];
+                                select2 += "<option value='" + portAux + "'>" + portAux + "</option>";
+                            }
+                            $('#portSwitchChart').html("<br><b>Choose a Port:</b>" + select2);
+                            $('#portSwitchChart').append("<br><input type='button' value='Send' onclick='setValuesPortChart()'/>");
+                        }
+                    }).trigger('change');
+                });
+            }
+            if (option === "flow") {
+                $.when(callGetAjax("/wm/core/switch/all/flow/json")).done(function (received) {
+                    var flowArray = populateFlowChart(received);
+                    var selectF1 = "<select id='flowSelect'> <option selected disabled hidden value=''> </option>";
+                    for (i = 0; i < flowArray.length; i++) {
+                        var flow = flowArray[i];
+                        selectF1 += "<option value='" + flow + "'>" + flow + "</option>";
+
+                    }
+                    $("#FlowChart").draggable();
+                    $("#FlowChart").html("<b>Choose a Flow:</b><br><br>" + selectF1);
+                    $("#FlowChart").append("<br><input type='button' value='Send' onclick='setValuesFlowChart()'/>");
+                    $("#FlowChart").css("border-style", "solid");
+                    $("#FlowChart").css("border-width", 5);
+                    $("#FlowChart").css("width", 350);
+                    $("#FlowChart").css("height", 150);
+                });
+            }
+        });
+
+    }
+
+    function setValuesFlowChart() {
+        var chart_status = 1; //Botão do Gráfico Liberado.
+        var flow = $("#flowSelect").val();
+        var target = "/wm/linkparameters/flows/json#" + mechanism + "@" + ($("#flowSelect").val());
+        $("#FlowChart").hide();
+        drawGraph(target, "flow", flow);
+    }
+
+    function setValuesPortChart() {
+        chart_status = 1;
+        var match = $("#switchSelect").val() + "," + $('#portSelect').val();
+        var target = "/wm/linkparameters/port_chart/json#" + mechanism + "@" + $("#switchSelect").val() + "," + $('#portSelect').val();
+        var maxBandwidthPort = "/wm/linkparameters/port_speed/json#" + $("#switchSelect").val() + "," + $('#portSelect').val();
+        $.when(callGetAjax(maxBandwidthPort)).done(function (received) {
+            var maxBandwidth = received.replace("Mbps", "");
+            $("#PortChart").hide();
+            drawGraph(target, "port", match);
+        });
+    }
+
+    function populatePortChart(received) {
+        var switchComponents = new Array();
+        var data = received;
+        var res = "";
+        for (var key in data) {
+            var arrayJson = data[key];
+            var row = key + "|";
+            for (i = 0; i < arrayJson.length; i++) {
+                obj = arrayJson[i];
+                var portNumber = obj.portNumber;
+                if (i === (arrayJson.length - 1)) {
+                    if (portNumber !== 65534) {
+                        row += portNumber;
+                        continue;
+                    }
+                    row = row.replace(/,([^,]*)$/, '$1'); //Remove last comma
+                }
+                if (portNumber !== 65534) {
+                    row += portNumber + ",";
+                }
+
+            }
+            switchComponents.push(row);
+        }
+        return switchComponents;
+    }
+
+
+    function populateFlowChart(received) {
+        var flowArray = new Array();
+        var data = JSON.parse(received);
+        for (var key in data) {
+            var arrayJson = data[key];
+            for (i = 0; i < arrayJson.length; i++) {
+                var row = "";
+                var jsonObject = arrayJson[i];
+                obj = jsonObject.match;
+                if (obj.dataLayerType !== "0x0800") {
+                    continue; // Capturar só pacotes Ethernet.
+                }
+                var networkSource = obj.networkSource;
+                var networkDestination = obj.networkDestination;
+                var transportSource = (obj.transportSource) & 0xffff;
+                var transportDestination = (obj.transportDestination) & 0xffff;
+                if (obj.networkProtocol === 17) {
+                    var networkProtocol = "UDP";
+                } else if (obj.networkProtocol === 6) {
+                    networkProtocol = "TCP";
+                } else {
+                    continue; // Não é TCP nem UDP
+                }
+                if (i === (arrayJson.length - 1)) {
+                    row += networkSource + "," + networkDestination + "," + transportSource + "," + transportDestination + "," + networkProtocol;
+                    if (flowArray.indexOf(row) === -1) { // Verificar se o array contém o elemento. Se tiver, não insere.
+                        flowArray.push(row);
+                    }
+
+                    continue;
+                }
+                row += networkSource + "," + networkDestination + "," + transportSource + "," + transportDestination + "," + networkProtocol;
+                if (flowArray.indexOf(row) === -1) { // Verificar se o array contém o elemento. Se tiver, não insere.
+                    flowArray.push(row);
+                }
+            }
+        }
+        return flowArray;
+    }
+
+    function callGetAjax(target) { //Não posso processar o result do AJAX aqui.
+        return $.ajax({
+            type: "POST",
+            data: {
+                parameter: URL + target
+            },
+            url: "../php/connectController.php"
+        });
+    }
+
+
+    function processaPort(received, match) {
+        var data = JSON.parse(received);
+        try {
+            var valueB = data[0][match];
+        } catch (err) {
+            return null;
+        }
+        var dpidArray = new Array();
+        var value = Math.ceil(valueB);
+        var sw = match;
+        if (DPID_Traffic[sw] === undefined) {
+            var sArray = new Array();
+            for (var j = 0; j < 600; j++) {
+                sArray.push(null);
+            }
+            sArray.push(value);
+            DPID_Traffic[sw] = sArray;
+        } else {
+            var sArray = DPID_Traffic[sw];
+            sArray.push(value);
+            DPID_Traffic[sw] = sArray;
+        }
+        dpidArray.push(sw);
+        if (obj === null) {
+            getGraph(dpidArray);
+        }
+        var dTraffic = DPID_Traffic[sw];
+        obj.original_data[0] = dTraffic;
+        return dpidArray;
+    }
+
+
+    function processaFlow(received, flow) {
+        try { //No caso da conexão cair.
+            var data = JSON.parse(received);
+            var objJson = data[0][flow];
+        } catch (err) {
+            return null;
+        }
+        var dpidArray = new Array();
+        for (i = 0; i < objJson.length; i++) {
+            var sw = objJson[i]["switch"];
+            sw = sw.split(",")[0];
+            var aux = objJson[i].value;
+            var traffic = Math.ceil(aux);
+            if (DPID_Traffic[sw] === undefined) {
+                var sArray = new Array();
+                for (var j = 0; j < 600; j++) {
+                    sArray.push(null);
+                }
+                sArray.push(traffic);
+                DPID_Traffic[sw] = sArray;
+            } else {
+                var sArray = DPID_Traffic[sw];
+                sArray.push(traffic);
+                DPID_Traffic[sw] = sArray;
+            }
+
+            dpidArray.push(sw);
+        }
+        dpidArray.sort();
+        if (obj === null) {
+            getGraph(dpidArray);
+        }
+        for (i = 0; i < dpidArray.length; i++) {
+            dTraffic = DPID_Traffic[dpidArray[i]];
+            obj.original_data[i] = dTraffic;
+        }
+        return dpidArray;
+    }
+
+    $(function () {
+        $("#clear").click(function () {
+            location.reload();
+        });
+    });
+
+
+</script>
+
+
+<button type="button" id="charts">
+    Generate Chart
+</button>
+
+<button type="button" id="clear">
+    Clean Everything
+</button>
+
+<div id="ChooseCharts"></div>
+
+<div id="FlowChart"></div>
+
+<div id="PortChart"></div>
+
+<div id="Canvas"></div>
+
+</body>
+</html>

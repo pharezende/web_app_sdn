@@ -1,0 +1,54 @@
+<!DOCTYPE html >
+<html>
+<head>
+    <link rel="stylesheet" href="demos.css" type="text/css" media="screen" />
+    
+    <script type="text/javascript" src="../libraries/RGraph.common.core.js" ></script>
+    <script type="text/javascript" src="../libraries/RGraph.drawing.image.js" ></script>
+    <script type="text/javascript" src="../libraries/RGraph.odo.js" ></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <!--[if lt IE 9]><script src="../excanvas/excanvas.js"></script><![endif]-->
+    
+    <title>A Odo chart using a background image</title>
+
+    <meta name="description" content="A Odo chart using a background image" />
+     
+</head>
+<body>
+
+    <h1>An Odometer chart using a background image</h1>
+
+
+    <canvas id="cvs" width="300" height="300">[No canvas support]</canvas>
+    
+    <script>
+        $(document).ready(function ()
+        {
+            var img = new RGraph.Drawing.Image('cvs', -4,0,'../images/odometer-background.png')
+                .set('shadow', true)
+                .draw()
+            
+            var odo = new RGraph.Odometer('cvs', 0,360,56)
+                .set('green.color', 'rgba(0,0,0,0)')
+                .set('yellow.color', 'rgba(0,0,0,0)')
+                .set('red.color', 'rgba(0,0,0,0)')
+                .set('background.color', 'rgba(0,0,0,0)')
+                .set('background.lines.color', 'rgba(0,0,0,0)')
+                .set('background.border', 'rgba(0,0,0,0)')
+                .set('tickmarks', false)
+                .set('tickmarks.big.color', 'rgba(0,0,0,0)')
+                .set('text.color', 'rgba(0,0,0,0)')
+                .set('needle.color', '#ddd')
+                .set('needle.tail', false)
+                .set('needle.head', false)
+                .set('needle.thickness',5)
+                .draw()
+        })
+    </script>
+
+    <p>
+        <a href="./">&laquo; Back</a>
+    </p>
+
+</body>
+</html>
